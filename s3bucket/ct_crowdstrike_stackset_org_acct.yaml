@@ -1,27 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: This template sets up a cross account IAM role in order to
-  enable CrowdStrike Falcon Discover for AWS functionality.
-Metadata:
-  AWS::CloudFormation::Interface:
-    ParameterGroups:
-      - Label:
-          default: Cross Account IAM Role.
-        Parameters:
-          - RoleName
-          - ExternalID
-          - CSAccountNumber
-          - CSAssumingRoleName
-    ParameterLabels:
-      RoleName:
-        default: IAM Role Name
-      ExternalID:
-        default: External ID
-      CSAccountNumber:
-        default: AWS Account ID to Grant Permission. Do not modify
-      CSAssumingRoleName:
-        default: Assuming IAM Role Name.  Do not modify
-      CrowdStrikeCloud:
-        defatult: The CrowdStrike Cloud that your CID is hosted in
+#Description: This template sets up a cross account IAM role in order to
+##  enable CrowdStrike Falcon Discover for AWS functionality.
 
 Outputs:
   RoleARN:
