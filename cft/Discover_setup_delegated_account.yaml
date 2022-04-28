@@ -46,10 +46,14 @@ Parameters:
     Type: String
     Description: AccountId of Log Archive Bucket
 
-
   LogArchiveBucketRegion:
     Type: String
     Description: The region where the cloudtrail bucket is located.
+
+  StackSetName:
+    Type: String
+    Description: The name of the StackSet that will be created
+    Default: CrowdstrikeDiscover-IAM-ROLES
 
 Mappings:
   CSCloud:
@@ -208,6 +212,7 @@ Resources:
           CSAccountNumber: !FindInMap [ CSCloud, !Ref CrowdStrikeCloud, CSAccountNumber ]
           CSAssumingRoleName: !FindInMap [ CSCloud, !Ref CrowdStrikeCloud, CSAssumingRoleName ]
           CrowdstrikeCredentialsSecret: !Ref CrowdStrikeCredentials
+          StackSetName: !Ref StackSetName
       Handler: create_stackset_lambda_org_acct.lambda_handler
       Runtime: python3.7
       MemorySize: 128
@@ -232,34 +237,7 @@ Resources:
       Description: Layer for requests package
       LayerName: requests-package
 
-#
-#  LambdaRoleToCaptureEvents:
-#    Type: AWS::IAM::Role
-#    Properties:
-#      RoleName: !Join
-#        - '-'
-#        - - !Ref 'AWS::StackName'
-#          - LambdaRoleToCaptureEvents
-#      AssumeRolePolicyDocument:
-#        Version: '2012-10-17'
-#        Statement:
-#          - Effect: Allow
-#            Principal:
-#              Service: lambda.amazonaws.com
-#            Action: sts:AssumeRole
-#            Condition: { }
-#      Path: /
-#      Policies:
-#        - PolicyName: inline-policy
-#          PolicyDocument:
-#            Version: 2012-10-17
-#            Statement:
-#              - Effect: Allow
-#                Action:
-#                  - 'cloudformation:CreateStackInstances'
-#                Resource: !Join [ ':',[ 'arn:aws:cloudformation', !Ref 'AWS::Region', !Ref 'AWS::AccountId', 'stackset/*:*' ] ]
-#      ManagedPolicyArns:
-#        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
 
 
 
