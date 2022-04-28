@@ -85,9 +85,10 @@ def launch_crwd_discover(templateUrl, paramList, cList, stacketsetName):
                                           PermissionModel='SERVICE_MANAGED',
                                           Capabilities=cList,
                                           AutoDeployment={
-                                              'Enabled': False,
+                                              'Enabled': True,
                                               'RetainStacksOnAccountRemoval': False
-                                          })
+                                          }
+                                          )
             return result
         except ClientError as e:
             if e.response['Error']['Code'] == 'NameAlreadyExistsException':
@@ -150,7 +151,6 @@ def delete_stackset(stacksetName):
 
 
 def lambda_handler(event, context):
-
     try:
         S3Bucket = os.environ['S3Bucket']
         CrowdStrikeCloud = os.environ['CrowdStrikeCloud']
@@ -162,7 +162,7 @@ def lambda_handler(event, context):
         CSAccountNumber = os.environ['CSAccountNumber']
         CSAssumingRoleName = os.environ['CSAssumingRoleName']
         CredentialsSecret = os.environ['CrowdstrikeCredentialsSecret']
-        STACKSETNAME = 'CrowdstrikeDiscover-IAM-ROLES'
+        STACKSETNAME = os.environ['StackSetName']
 
         #
         # Moved to virtual hosted-style URLs.
@@ -190,7 +190,7 @@ def lambda_handler(event, context):
                 CRWD_Discover_paramList.append(dict(keyDict))
             ExternalID = get_random_alphanum_string(8)
             #
-            #Add support for additional CrowdStrike clouds
+            # Add support for additional CrowdStrike clouds
             #
             keyDict['ParameterKey'] = 'CrowdStrikeCloud'
             keyDict['ParameterValue'] = CrowdStrikeCloud
@@ -230,7 +230,6 @@ def lambda_handler(event, context):
 
             logger.info('CRWD_Discover ParamList:{}'.format(CRWD_Discover_paramList))
             logger.info('CrowdstrikeTemplateUrl: {}'.format(CrowdstrikeTemplateUrl))
-
 
             CRWD_Discover_result = launch_crwd_discover(CrowdstrikeTemplateUrl, CRWD_Discover_paramList, cList,
                                                         STACKSETNAME)
