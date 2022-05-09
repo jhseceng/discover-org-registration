@@ -27,9 +27,6 @@ Parameters:
     NoEcho: 'true'
     Type: String
 
-  S3Bucket:
-    Type: String
-
   CrowdStrikeCloud:
 
     Description:  The CrowdStrike Cloud your CID is hosted in us1, us2, eu
@@ -56,6 +53,17 @@ Parameters:
     Default: CrowdstrikeDiscover-IAM-ROLES
 
 Mappings:
+  S3perRegion:
+    us-east-1:
+      NAME: crowdstrike-sa-resources-ct-us-east-1
+    us-east-2:
+      NAME: crowdstrike-sa-resources-ct-us-east-2
+    us-west-2:
+      NAME: crowdstrike-sa-resources-ct-us-west-2
+    eu-west-1:
+      NAME: crowdstrike-sa-resources-ct-eu-west-1
+    ap-southeast-2:
+      NAME: crowdstrike-sa-resources-ct-ap-southeast-2
   CSCloud:
     us1:
       CloudUrl: https://api.crowdstrike.com
@@ -73,10 +81,6 @@ Mappings:
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
-      - Label:
-          default: S3 Bucket objects must be public read only in the region where stackset operations are performed.
-        Parameters:
-          - S3Bucket
       - Label:
           default: CrowdStrike Role Parameters.
         Parameters:
@@ -196,13 +200,13 @@ Resources:
     DeletionPolicy: Delete
     Properties:
       Code:
-        S3Bucket: !Ref S3Bucket
+        S3Bucket: !FindInMap [ S3perRegion, !Ref "AWS::Region", NAME ]
         S3Key: create_stackset_lambda_org_acct.zip
       Layers:
         - !Ref lambdaLayer
       Environment:
         Variables:
-          S3Bucket: !Ref S3Bucket
+          S3Bucket: !FindInMap [ S3perRegion, !Ref "AWS::Region", NAME ]
           CrowdStrikeCloud: !Ref CrowdStrikeCloud
           RoleCreationDelayTimer: !Ref RoleCreationDelayTimer
           AwsRegion: !Ref AWS::Region
@@ -232,7 +236,7 @@ Resources:
       CompatibleRuntimes:
         - python3.7
       Content:
-        S3Bucket: !Ref S3Bucket
+        S3Bucket: !FindInMap [ S3perRegion, !Ref "AWS::Region", NAME ]
         S3Key: falconpy-layer.zip
       Description: Layer for requests package
       LayerName: requests-package

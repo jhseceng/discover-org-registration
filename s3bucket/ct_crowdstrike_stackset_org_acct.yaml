@@ -7,6 +7,35 @@ Outputs:
     Description: The ARN of the role that can be assumed by the other account.
     Value: !GetAtt 'iamRole.Arn'
 
+Mappings:
+  S3perRegion:
+    us-east-1:
+      NAME: crowdstrike-sa-resources-ct-us-east-1
+    us-east-2:
+      NAME: crowdstrike-sa-resources-ct-us-east-2
+    us-west-2:
+      NAME: crowdstrike-sa-resources-ct-us-west-2
+    eu-west-1:
+      NAME: crowdstrike-sa-resources-ct-eu-west-1
+    ap-southeast-2:
+      NAME: crowdstrike-sa-resources-ct-ap-southeast-2
+
+  CSCloud:
+    us1:
+
+      CSAssumingRoleName: CS-Prod-HG-CsCloudconnectaws
+      CSAccount: 292230061137
+
+    us2:
+
+      CSAssumingRoleName: mav-gyr-main-s001-cs-cloudconnectaws
+      CSAccount: 292230061137
+
+    eu:
+
+      CSAssumingRoleName: lion-lanner-main-s001-cs-cloudconnectaws
+      CSAccount: 292230061137
+
 Parameters:
   CrowdStrikeCloud:
     Default: us1
