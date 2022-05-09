@@ -20,7 +20,7 @@ FAILED = "FAILED"
 # Add support for different CrowdStrike clouds
 CrowdStrikeCloud = os.environ['CrowdStrikeCloud']
 #
-cloudtrail_bucket_owner_id = os.environ['central_s3_bucket_account']
+cloudtrail_bucket_owner_id = os.environ['LogArchiveAccount']
 cloudtrail_bucket_region = os.environ['cloudtrail_bucket_region']
 iam_role_arn = os.environ['iam_role_arn']
 CSAccountNumber = os.environ['CSAccountNumber']
