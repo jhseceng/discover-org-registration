@@ -3,9 +3,13 @@
 The template is supported in the following regions
 
 eu-west-1
+
 us-east-1
+
 us-east-2
+
 us-west-2
+
 ap-southeast-2
 
 
@@ -24,6 +28,7 @@ AutoDeployment =
 ## Instructions
 
 1) Load the CFT from the "cft" folder and apply the settings. 
+
 
 The cloudformation template is titled 'Discover_setup_delegated_account.yaml'
 
