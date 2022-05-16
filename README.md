@@ -35,7 +35,7 @@ The cloudformation template will create a stackset that can be applied to all ac
 The above cft creates the Stackset using values from a mapping file.  The following mappings apply 
 
 |  CSCloud 	|  us1 	|   us2	|   eu	|   	
-|---	|---	|---	|---	|---	|
+|---	|---	|---	|---	|
 |  CSAssumingRoleName 	| CS-Prod-HG-CsCloudconnectaws  	|   mav-gyr-main-s001-cs-cloudconnectaws	| lion-lanner-main-s001-cs-cloudconnectaws  	|   	
 |  CSAccountNumber 	| 292230061137   	|  292230061137 	|  292230061137  	|   
 
