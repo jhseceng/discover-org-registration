@@ -1,5 +1,14 @@
 # Discover Org Registration Templates
 
+The template is supported in the following regions
+
+eu-west-1
+us-east-1
+us-east-2
+us-west-2
+ap-southeast-2
+
+
 ## Overview
 
 Creates resources that help with Discover account registration in an AWS Organization. 
@@ -14,9 +23,24 @@ AutoDeployment =
 
 ## Instructions
 
-1) Upload the files from the s3 bucket folder to an S3 bucket and make the files **PUBLIC READ ONLY** in the region where you perform stackset operations.  You can achieve this using bucket ACLs or a bucket policy.
-https://aws.amazon.com/premiumsupport/knowledge-center/read-access-objects-s3-bucket/
+1) Load the CFT from the "cft" folder and apply the settings. 
+
+The cloudformation template is titled 'Discover_setup_delegated_account.yaml'
+
+The cloudformation template will create a stackset that can be applied to all accounts. 
 
 
-2) Load the CFT from the "cft" folder and apply the settings. 
+## StackSet Details
+
+The above cft creates the Stackset using values from a mapping file.  The following mappings apply 
+
+|  CSCloud 	|  us1 	|   us2	|   eu	|   	
+|---	|---	|---	|---	|---	|
+|  CSAssumingRoleName 	| CS-Prod-HG-CsCloudconnectaws  	|   mav-gyr-main-s001-cs-cloudconnectaws	| lion-lanner-main-s001-cs-cloudconnectaws  	|   	
+|  CSAccountNumber 	| 292230061137   	|  292230061137 	|  292230061137  	|   
+
+
+
+
+
 
