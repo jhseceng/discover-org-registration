@@ -132,7 +132,7 @@ def lambda_handler(event, context):
         response_data = {}
         logger.info('Event = {}'.format(event))
         FalconClientId = event['ResourceProperties']['FalconClientId']
-        FalconSecret = event['ResouceProperties']['FalconSecret']
+        FalconSecret = event['ResourceProperties']['FalconSecret']
         falcon = CloudConnectAWS(client_id=FalconClientId,
                                  client_secret=FalconSecret,
                                  base_url=CrowdStrikeCloud   # Only necessary for GovCloud

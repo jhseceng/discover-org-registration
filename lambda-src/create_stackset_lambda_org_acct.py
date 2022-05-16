@@ -188,16 +188,12 @@ def lambda_handler(event, context):
             for s in secretList.keys():
                 keyDict = {'ParameterKey': s, 'ParameterValue': secretList[s]}
                 CRWD_Discover_paramList.append(dict(keyDict))
-            ExternalID = get_random_alphanum_string(8)
+
             #
             # Add support for additional CrowdStrike clouds
             #
             keyDict['ParameterKey'] = 'CrowdStrikeCloud'
             keyDict['ParameterValue'] = CrowdStrikeCloud
-            CRWD_Discover_paramList.append(dict(keyDict))
-
-            keyDict['ParameterKey'] = 'ExternalID'
-            keyDict['ParameterValue'] = ExternalID
             CRWD_Discover_paramList.append(dict(keyDict))
 
             keyDict['ParameterKey'] = 'RoleCreationDelayTimer'
