@@ -22,7 +22,7 @@ Parameters:
     NoEcho: 'true'
     Type: String
 
-  ExternalId:
+  ExternalID:
     Description: ExternalID Used for authenticating assume role requests.
     NoEcho: 'true'
     Type: String
@@ -85,7 +85,7 @@ Metadata:
           default: CrowdStrike Role Parameters.
         Parameters:
           - RoleName
-          - ExternalId
+          - ExternalID
       - Label:
           default: CrowdStrike Falcon API keys.
         Parameters:
@@ -113,6 +113,8 @@ Resources:
             - Ref: FalconClientId
             - '","FalconSecret": "'
             - Ref: FalconSecret
+            - '","ExternalID": "'
+            - Ref: ExternalID
             - '"}'
   launchLambdaRole:
     Type: AWS::IAM::Role
@@ -225,8 +227,6 @@ Resources:
   CreateStackSet:
     Type: 'Custom::TriggerLambda'
     Properties:
-      FalconSecret: !Ref FalconSecret
-      FalconClientId: !Ref FalconClientId
       ServiceToken: !GetAtt
         - CreateStackSetLambda
         - Arn
