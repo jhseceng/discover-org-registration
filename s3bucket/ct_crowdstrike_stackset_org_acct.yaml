@@ -22,17 +22,12 @@ Mappings:
 
   CSCloud:
     us1:
-
       CSAssumingRoleName: CS-Prod-HG-CsCloudconnectaws
       CSAccount: 292230061137
-
     us2:
-
       CSAssumingRoleName: mav-gyr-main-s001-cs-cloudconnectaws
       CSAccount: 292230061137
-
     eu:
-
       CSAssumingRoleName: lion-lanner-main-s001-cs-cloudconnectaws
       CSAccount: 292230061137
 
@@ -162,6 +157,13 @@ Resources:
       Environment:
         Variables:
           CrowdStrikeCloud: !Ref CrowdStrikeCloud
+          LogArchiveAccount: !Ref LogArchiveAccount
+          cloudtrail_bucket_region: !Ref LogArchiveBucketRegion
+          iam_role_arn: !GetAtt 'iamRole.Arn'
+          CSAccountNumber: !Ref CSAccountNumber
+          CSAssumingRoleName: !Ref CSAssumingRoleName
+          LocalAccount: !Ref AWS::AccountId
+          aws_region: Ref AWS::Region
           delay_timer: !Ref RoleCreationDelayTimer
       Code:
         S3Bucket:  !Ref S3Bucket
@@ -179,13 +181,9 @@ Resources:
     DependsOn:
       - CrowdStrikeRegisterAcctLambdaRole
     Properties:
-      central_s3_bucket_account: !Ref LogArchiveAccount
-      central_s3_bucket_region: !Ref LogArchiveBucketRegion
-      iam_role_arn: !GetAtt "iamRole.Arn"
-      local_account: !Ref AWS::AccountId
-      falcon_secret: !Ref FalconSecret
-      falcon_clientid: !Ref FalconClientId
-      external_id: !Ref ExternalID
+      FalconSecret: !Ref FalconSecret
+      FalconClientId: !Ref FalconClientId
+      ExternalID: !Ref ExternalID
       ServiceToken: !GetAtt
         - manageInstanceFalconAPI
         - Arn
