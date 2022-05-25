@@ -1,6 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-#Description: This template sets up a cross account IAM role in order to
-##  enable CrowdStrike Falcon Discover for AWS functionality.
+Description: This template sets up a cross account IAM role in order to enable CrowdStrike Falcon Discover and registers the Account within the Falcon platform.
 
 Outputs:
   RoleARN:
@@ -48,7 +47,7 @@ Parameters:
   FalconClientId:
     Description: Falcon OAuth2 Client ID.
     Type: String
-    NoEcho: 'true'
+    NoEcho: true
 
   S3Bucket:
     Type: String
@@ -56,7 +55,7 @@ Parameters:
   FalconSecret:
     Description: Falcon Oath2 API secret.
     Type: String
-    NoEcho: 'true'
+    NoEcho: true
 
   ExternalID:
     Description: The External ID that will be required to assume the role.
@@ -79,18 +78,14 @@ Parameters:
     MinLength: '12'
     Type: String
 
-
   CSAssumingRoleName:
     Description: Name of the IAM role used within CrowdStrike to assume access to
       your account.
     Type: String
 
-
   LogArchiveAccount:
     Type: String
     Description: AccountId of Log Archive Bucket
-
-
 
 Resources:
   iamRole:
@@ -138,18 +133,14 @@ Resources:
       Roles:
         - !Ref 'iamRole'
 
-
   lambdaLayer:
     Type: AWS::Lambda::LayerVersion
     Properties:
-      CompatibleRuntimes:
-        - python3.7
       Content:
-        S3Bucket:  !Ref S3Bucket
+        S3Bucket: !Ref S3Bucket
         S3Key: falconpy-layer.zip
-      Description: Layer for requests package
-      LayerName: requests-package
-
+      Description: Layer for falconpy package
+      LayerName: falconpy-package
 
   manageInstanceFalconAPI:
     Type: AWS::Lambda::Function
@@ -163,7 +154,7 @@ Resources:
           CSAccountNumber: !Ref CSAccountNumber
           CSAssumingRoleName: !Ref CSAssumingRoleName
           LocalAccount: !Ref AWS::AccountId
-          aws_region: Ref AWS::Region
+          aws_region: !Ref AWS::Region
           delay_timer: !Ref RoleCreationDelayTimer
       Code:
         S3Bucket:  !Ref S3Bucket
@@ -173,8 +164,8 @@ Resources:
       Handler: register_org_account.lambda_handler
       MemorySize: 128
       Role: !GetAtt "CrowdStrikeRegisterAcctLambdaRole.Arn"
-      Runtime: python3.7
-      Timeout: 890
+      Runtime: python3.9
+      Timeout: 900
 
   TriggerLambda:
     Type: 'Custom::TriggerLambda'
