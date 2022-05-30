@@ -3,23 +3,17 @@ import logging
 import os
 import random
 import string
-import sys
 import time
-
-# from botocore.vendored import requests
 import requests
 from falconpy import CloudConnectAWS
-
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 SUCCESS = "SUCCESS"
 FAILED = "FAILED"
-#
-# Add support for different CrowdStrike clouds
+
 CrowdStrikeCloud = os.environ['CrowdStrikeCloud']
-#
 cloudtrail_bucket_owner_id = os.environ['LogArchiveAccount']
 cloudtrail_bucket_region = os.environ['cloudtrail_bucket_region']
 iam_role_arn = os.environ['iam_role_arn']
@@ -29,9 +23,7 @@ LocalAccount = os.environ['LocalAccount']
 aws_region = os.environ['aws_region']
 delay_timer = os.environ['delay_timer']
 
-
-
-def delete_falcon_discover_account(payload, api_interface) -> bool:
+def delete_falcon_discover_account(api_interface) -> bool:
     SuccessResult = True
     delete_response = api_interface.DeleteAWSAccounts(ids=LocalAccount)
     if delete_response["status_code"] == 200:
@@ -41,7 +33,6 @@ def delete_falcon_discover_account(payload, api_interface) -> bool:
         emsg = delete_response['body']['errors'][0]['message']
         print(f"Delete failed with response: {ecode} {emsg}")
         SuccessResult = False
-
     return SuccessResult
 
 
@@ -54,10 +45,9 @@ def register_falcon_discover_account(payload, api_interface) -> bool:
         logger.info("Account already registered - nothing to do")
     else:
         ecode = result["status_code"]
-        emsg = result["errors"][0]["message"]
-        logging.info("Account Registration Failed - Response: {}: {}".format(ecode, emsg))
+        emsg = result["body"]["errors"][0]["message"]
+        logging.info(f"Account Registration Failed - Response: {ecode}: {emsg}")
         SuccessResult = False
-
     return SuccessResult
 
 def update_falcon_discover_account(payload, api_interface) -> bool:
@@ -68,9 +58,8 @@ def update_falcon_discover_account(payload, api_interface) -> bool:
     else:
         ecode = result["status_code"]
         emsg = result["errors"][0]["message"]
-        logging.info("Account Update Failed - Response: {}: {}".format(ecode, emsg))
+        logging.info(f"Account Update Failed - Response: {ecode}: {emsg}")
         SuccessResult = False
-
     return SuccessResult
 
 def format_notification_message(external_id, rate_limit_reqs=0, rate_limit_time=0):
@@ -87,9 +76,8 @@ def format_notification_message(external_id, rate_limit_reqs=0, rate_limit_time=
             }
         ]
     }
-    logger.info('Post Data {}'.format(data))
-    message = json.dumps(data)
-    return message
+    logger.info(f'Post Data {data}')
+    return data
 
 
 def cfnresponse_send(event, context, responseStatus, responseData, physicalResourceId=None, noEcho=False):
@@ -122,15 +110,10 @@ def cfnresponse_send(event, context, responseStatus, responseData, physicalResou
         print("send(..) failed executing requests.put(..): " + str(e))
 
 
-def get_random_alphanum_string(stringLength=8):
-    lettersAndDigits = string.ascii_letters + string.digits
-    return ''.join((random.choice(lettersAndDigits) for i in range(stringLength)))
-
-
 def lambda_handler(event, context):
     try:
         response_data = {}
-        logger.info('Event = {}'.format(event))
+        logger.info(f'Event = {event}')
         FalconClientId = event['ResourceProperties']['FalconClientId']
         FalconSecret = event['ResourceProperties']['FalconSecret']
         falcon = CloudConnectAWS(client_id=FalconClientId,
@@ -143,13 +126,11 @@ def lambda_handler(event, context):
             try:
                 delay = float(delay_timer)
             except Exception as e:
-                logger.info('cant convert delay_timer type {} error {}'.format(type(delay_timer), e))
+                logger.info(f'cant convert delay_timer type {delay_timer} error {e}')
                 delay = 60
-                pass
-            logger.info('Got ARN of Role Pausing for {} seconds for role setup'.format(delay))
+            logger.info(f'Got ARN of Role Pausing for {delay} seconds for role setup')
             time.sleep(delay)
             register_result = register_falcon_discover_account(api_message, falcon)
-            logger.info('Account registration result: {}'.format(register_result))
             if register_result:
                 cfnresponse_send(event, context, SUCCESS, register_result, "CustomResourcePhysicalID")
             else:
@@ -160,7 +141,7 @@ def lambda_handler(event, context):
             external_id = event['ResourceProperties']['ExternalID']
             api_message = format_notification_message(external_id)
             register_result = update_falcon_discover_account(api_message, falcon)
-            logger.info('Account update result: {}'.format(register_result))
+            logger.info(f'Account update result: {register_result}')
             if register_result:
                 cfnresponse_send(event, context, SUCCESS, "CustomResourcePhysicalID")
             else:
@@ -174,7 +155,7 @@ def lambda_handler(event, context):
             logger.info('Event = ' + event['RequestType'])
             external_id = event['ResourceProperties']['ExternalID']
             api_message = format_notification_message(external_id)
-            result = delete_falcon_discover_account(api_message, falcon)
+            result = delete_falcon_discover_account(falcon)
             if result:
                 logger.info('Successfully deleted account in Falcon Discover portal')
             else:
@@ -187,3 +168,4 @@ def lambda_handler(event, context):
         response_data = {}
         response_data["Status"] = str(e)
         cfnresponse_send(event, context, 'FAILED', response_data, "CustomResourcePhysicalID")
+
