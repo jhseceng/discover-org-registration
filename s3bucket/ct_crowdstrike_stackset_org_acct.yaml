@@ -67,10 +67,6 @@ Parameters:
     MinLength: '1'
     Type: String
 
-  LogArchiveBucketRegion:
-    Type: String
-    Description: Log archive bucket region
-
   CSAccountNumber:
     AllowedPattern: '[0-9]+'
     Description: The 12 digit AWS account number to grant access to.
@@ -86,6 +82,19 @@ Parameters:
   LogArchiveAccount:
     Type: String
     Description: AccountId of Log Archive Bucket
+
+  LogArchiveBucketRegion:
+    Type: String
+    Description: Log archive bucket region
+
+  LogArchiveBucketName:
+    Type: String
+    Description: Name of bucket containing CloudTrail Logs
+
+Conditions:
+  IsLogArchiveAccount: !Equals
+    - !Ref LogArchiveAccount
+    - !Ref AWS::AccountId
 
 Resources:
   iamRole:
@@ -110,9 +119,9 @@ Resources:
         Version: '2012-10-17'
       Path: /
   iamPolicyDescribeAccess:
-    Type: AWS::IAM::Policy
+    Type: AWS::IAM::ManagedPolicy
     Properties:
-      PolicyName: DescribeAPICalls
+      ManagedPolicyName: FalconDiscoverAccess
       PolicyDocument:
         Statement:
           - Action:
@@ -128,6 +137,22 @@ Resources:
               - iam:ListAccountAliases
             Effect: Allow
             Resource: '*'
+            Sid: ''
+        Version: '2012-10-17'
+      Roles:
+        - !Ref 'iamRole'
+
+  iamPolicyS3CTAccess:
+    Type: AWS::IAM::ManagedPolicy
+    Condition: IsLogArchiveAccount
+    Properties:
+      ManagedPolicyName: FalconCloudTrailAccess
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:GetObject
+            Effect: Allow
+            Resource: !Sub 'arn:aws:s3:::${LogArchiveBucketName}/*'
             Sid: ''
         Version: '2012-10-17'
       Roles:

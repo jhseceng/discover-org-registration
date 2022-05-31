@@ -45,6 +45,10 @@ Parameters:
     Type: String
     Description: The region where the cloudtrail bucket is located.
 
+  LogArchiveBucketName:
+    Type: String
+    Description: Bucketname where cloudtrail logs are stored.
+
   StackSetName:
     Type: String
     Description: The name of the StackSet that will be created
@@ -97,6 +101,7 @@ Metadata:
         Parameters:
           - LogArchiveAccount
           - LogArchiveBucketRegion
+          - LogArchiveBucketName
 
 Resources:
   DiscoverStackSet:
@@ -125,6 +130,8 @@ Resources:
           ParameterValue: !Ref LogArchiveBucketRegion
         - ParameterKey: LogArchiveAccount
           ParameterValue: !Ref LogArchiveAccount
+        - ParameterKey: LogArchiveBucketName
+          ParameterValue: !Ref LogArchiveBucketName
         - ParameterKey: S3Bucket
           ParameterValue: !FindInMap [ S3perRegion, !Ref "AWS::Region", NAME ]
         - ParameterKey: ExternalID
